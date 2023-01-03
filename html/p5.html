@@ -1,0 +1,630 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>PR&Aacute;CTICA 5 - EFECTOS DE PRECISI&Oacute;N FINITA EN FILTROS DIGITALES</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-01-03"><meta name="DC.source" content="p5.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>PR&Aacute;CTICA 5 - EFECTOS DE PRECISI&Oacute;N FINITA EN FILTROS DIGITALES</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">2. Efectos del redondeo en los coeficientes en la respuesta en frecuencia</a></li><li><a href="#3">2.1. Respuesta en frecuencia</a></li><li><a href="#4">2.2. Determinaci&oacute;n de polos y ceros</a></li><li><a href="#7">2.3. Cuantificaci&oacute;n coeficientes del denominador</a></li><li><a href="#11">2.4. Polos de filtros con coeficientes cuantificados</a></li><li><a href="#15">2.5. Cuantificaci&oacute;n de los coeficientes del numerador</a></li><li><a href="#16">2.6. Determinaci&oacute;n de la respuesta en frecuencia del filtro con coeficientes cuantificados</a></li><li><a href="#17">2.7. Descomposici&oacute;n en secciones de segundo orden</a></li><li><a href="#18">2.8. Cuantificaci&oacute;n de las secciones de segundo orden</a></li><li><a href="#19">2.9. Funci&oacute;n de transferencia de secciones de segundo orden cuantificadas</a></li><li><a href="#20">2.10. Estabilidad de las secciones de segundo orden cuantificadas</a></li><li><a href="#22">3. Efectos de precisi&oacute;n finita en los c&aacute;lculos</a></li><li><a href="#23">3.1. Estudio anal&iacute;tico</a></li><li><a href="#24">3.1.1 Determinar Amax</a></li><li><a href="#25">3.1.1.1. Se&ntilde;al de entrada arbitraria</a></li><li><a href="#27">3.1.1.2. Tono de frecuencia arbitraria</a></li><li><a href="#30">3.1.2. Determinar la potencia de ruido</a></li><li><a href="#31">3.2. Estudio por simulaci&oacute;n</a></li><li><a href="#32">3.2.1. Saturaci&oacute;n</a></li><li><a href="#33">3.2.2. Redondeos en las operaciones</a></li><li><a href="#37">4. Aplicaci&oacute;n a se&ntilde;ales de audio</a></li><li><a href="#38">4.1. Inestabilidad por cuantificaci&oacute;n de los coeficientes</a></li><li><a href="#40">4.2. Saturaci&oacute;n por escalado incorrecto</a></li><li><a href="#42">4.3. Ruido de redondeo</a></li></ul></div><pre class="codeinput">clc;clearvars;close <span class="string">all</span>;
+</pre><h2 id="2">2. Efectos del redondeo en los coeficientes en la respuesta en frecuencia</h2><pre class="codeinput">load(<span class="string">'filtros.mat'</span>);
+</pre><h2 id="3">2.1. Respuesta en frecuencia</h2><pre class="codeinput">figure;freqz(B1,A1);title(<span class="string">'H1'</span>);
+figure;freqz(B2,A2);title(<span class="string">'H2'</span>);
+</pre><img vspace="5" hspace="5" src="p5_01.png" alt=""> <img vspace="5" hspace="5" src="p5_02.png" alt=""> <h2 id="4">2.2. Determinaci&oacute;n de polos y ceros</h2><pre class="codeinput">figure;zplane(B1,A1);title(<span class="string">'H1'</span>);
+</pre><img vspace="5" hspace="5" src="p5_03.png" alt=""> <pre class="codeinput">disp(<span class="string">'Ceros de H1:'</span>);disp(roots(B1));
+disp(<span class="string">'Polos de H1:'</span>);disp(roots(A1));
+figure;zplane(B2,A2);title(<span class="string">'H2'</span>);
+</pre><pre class="codeoutput">Ceros de H1:
+  -1.0881 + 0.0255i
+  -1.0881 - 0.0255i
+  -1.0600 + 0.0672i
+  -1.0600 - 0.0672i
+  -1.0156 + 0.0858i
+  -1.0156 - 0.0858i
+  -0.9711 + 0.0784i
+  -0.9711 - 0.0784i
+  -0.9394 + 0.0516i
+  -0.9394 - 0.0516i
+  -0.9257 + 0.0172i
+  -0.9257 - 0.0172i
+
+Polos de H1:
+   0.7514 + 0.5412i
+   0.7514 - 0.5412i
+   0.6605 + 0.4433i
+   0.6605 - 0.4433i
+   0.5958 + 0.3434i
+   0.5958 - 0.3434i
+   0.5517 + 0.2440i
+   0.5517 - 0.2440i
+   0.5243 + 0.1458i
+   0.5243 - 0.1458i
+   0.5111 + 0.0485i
+   0.5111 - 0.0485i
+
+</pre><img vspace="5" hspace="5" src="p5_04.png" alt=""> <pre class="codeinput">disp(<span class="string">'Ceros de H2:'</span>);disp(roots(B2));
+disp(<span class="string">'Polos de H2:'</span>);disp(roots(A2));
+</pre><pre class="codeoutput">Ceros de H2:
+  -1.0803 + 0.0246i
+  -1.0803 - 0.0246i
+  -1.0524 + 0.0646i
+  -1.0524 - 0.0646i
+  -1.0082 + 0.0814i
+  -1.0082 - 0.0814i
+  -1.0048 + 0.0000i
+  -0.9638 + 0.0718i
+  -0.9638 - 0.0718i
+  -0.9323 + 0.0413i
+  -0.9323 - 0.0413i
+  -0.9211 + 0.0000i
+
+Polos de H2:
+   0.2749 + 0.8388i
+   0.2749 - 0.8388i
+   0.2266 + 0.6442i
+   0.2266 - 0.6442i
+   0.1957 + 0.4779i
+   0.1957 - 0.4779i
+   0.1761 + 0.3300i
+   0.1761 - 0.3300i
+   0.1645 + 0.1937i
+   0.1645 - 0.1937i
+   0.1590 + 0.0639i
+   0.1590 - 0.0639i
+
+</pre><h2 id="7">2.3. Cuantificaci&oacute;n coeficientes del denominador</h2><p>Las constantes K1 y K2 para que los coeficientes almacenados del denominador sean menores que la unidad son:</p><pre class="codeinput">K1=ceil(max(abs(A1)));
+K2=ceil(max(abs(A2)));
+disp([<span class="string">'K1='</span>,num2str(K1)]);
+disp([<span class="string">'K2='</span>,num2str(K2)]);
+</pre><pre class="codeoutput">K1=78
+K2=5
+</pre><p>Los coeficientes normalizados de ambos filtros son:</p><pre class="codeinput">ak1=A1/K1; ak2=A2/K2;
+disp(<span class="string">'a1:'</span>);disp(ak1');
+disp(<span class="string">'a2:'</span>);disp(ak2');
+</pre><pre class="codeoutput">a1:
+    0.0128
+   -0.0922
+    0.3120
+   -0.6551
+    0.9470
+   -0.9909
+    0.7682
+   -0.4439
+    0.1896
+   -0.0583
+    0.0122
+   -0.0016
+    0.0001
+
+a2:
+    0.2000
+   -0.4787
+    0.8227
+   -0.9189
+    0.7975
+   -0.5209
+    0.2682
+   -0.1060
+    0.0322
+   -0.0072
+    0.0011
+   -0.0001
+    0.0000
+
+</pre><p>Cuantificamos</p><pre class="codeinput">B=16;
+ak1=cuantif(ak1,B);ak2=cuantif(ak2,B);
+</pre><p>Obtenemos A1q y A2q:</p><pre class="codeinput">A1q=K1*ak1;
+A2q=K2*ak2;
+disp(<span class="string">'A1q:'</span>);disp(A1q');
+disp(<span class="string">'A2q:'</span>);disp(A2q');
+</pre><pre class="codeoutput">A1q:
+    0.9998
+   -7.1889
+   24.3400
+  -51.0962
+   73.8652
+  -77.2930
+   59.9205
+  -34.6283
+   14.7849
+   -4.5443
+    0.9546
+   -0.1214
+    0.0071
+
+A2q:
+    0.9999
+   -2.3937
+    4.1136
+   -4.5947
+    3.9875
+   -2.6044
+    1.3408
+   -0.5301
+    0.1611
+   -0.0360
+    0.0056
+   -0.0006
+         0
+
+</pre><h2 id="11">2.4. Polos de filtros con coeficientes cuantificados</h2><pre class="codeinput">figure;zplane(1,A1q);title(<span class="string">'H1'</span>);
+</pre><img vspace="5" hspace="5" src="p5_05.png" alt=""> <pre class="codeinput">disp(<span class="string">'Polos de H1 cuantificados:'</span>);disp(roots(A1q));
+figure;zplane(1,A2q);title(<span class="string">'H2'</span>);
+</pre><pre class="codeoutput">Polos de H1 cuantificados:
+   1.0365 + 0.5474i
+   1.0365 - 0.5474i
+   0.6946 + 0.7214i
+   0.6946 - 0.7214i
+   1.0000 + 0.0000i
+   1.0000 - 0.0000i
+   0.4252 + 0.6024i
+   0.4252 - 0.6024i
+   0.2405 + 0.3683i
+   0.2405 - 0.3683i
+   0.1985 + 0.0994i
+   0.1985 - 0.0994i
+
+</pre><img vspace="5" hspace="5" src="p5_06.png" alt=""> <pre class="codeinput">disp(<span class="string">'Polos de H2 cuantificados:'</span>);disp(roots(A2q));
+</pre><pre class="codeoutput">Polos de H2 cuantificados:
+   0.0000 + 0.0000i
+   0.2739 + 0.8368i
+   0.2739 - 0.8368i
+   0.2415 + 0.6560i
+   0.2415 - 0.6560i
+   0.1361 + 0.5051i
+   0.1361 - 0.5051i
+   0.3256 + 0.3489i
+   0.3256 - 0.3489i
+   0.3700 + 0.0000i
+   0.0349 + 0.2621i
+   0.0349 - 0.2621i
+
+</pre><p>El filtro 1 es inestable, ya que varios polos se encuentran fuera del c&iacute;rculo unidad (suponemos que es un filtro causal ya que, si no, no ser&iacute;a implementable).</p><h2 id="15">2.5. Cuantificaci&oacute;n de los coeficientes del numerador</h2><pre class="codeinput">Bq=cuantif(B2,B);
+disp(<span class="string">'Bq:'</span>);disp(Bq');
+</pre><pre class="codeoutput">Bq:
+    0.0001
+    0.0013
+    0.0072
+    0.0241
+    0.0543
+    0.0869
+    0.1014
+    0.0869
+    0.0543
+    0.0241
+    0.0072
+    0.0013
+    0.0001
+
+</pre><h2 id="16">2.6. Determinaci&oacute;n de la respuesta en frecuencia del filtro con coeficientes cuantificados</h2><pre class="codeinput">figure;freqz(Bq,A2q);title(<span class="string">'H2 cuantificado'</span>);
+figure;freqz(B2,A2);title(<span class="string">'H2 sin cuantificar'</span>);
+</pre><img vspace="5" hspace="5" src="p5_07.png" alt=""> <img vspace="5" hspace="5" src="p5_08.png" alt=""> <h2 id="17">2.7. Descomposici&oacute;n en secciones de segundo orden</h2><pre class="codeinput">[sos1, g] = tf2sos(B1, A1);
+sos1
+</pre><pre class="codeoutput">
+sos1 =
+
+    1.0000    2.1763    1.1847    1.0000   -1.0223    0.2636
+    1.0000    2.1201    1.1282    1.0000   -1.0486    0.2961
+    1.0000    2.0312    1.0389    1.0000   -1.1035    0.3640
+    1.0000    1.9422    0.9492    1.0000   -1.1916    0.4729
+    1.0000    1.8789    0.8852    1.0000   -1.3209    0.6327
+    1.0000    1.8514    0.8572    1.0000   -1.5027    0.8575
+
+</pre><h2 id="18">2.8. Cuantificaci&oacute;n de las secciones de segundo orden</h2><pre class="codeinput">K=ceil(max(max(abs(sos1))));
+sos1k=sos1/K;
+sos1q=cuantif(sos1k,B);
+sos1q=sos1q*K
+</pre><pre class="codeoutput">
+sos1q =
+
+    1.0000    2.1763    1.1846    1.0000   -1.0223    0.2636
+    1.0000    2.1201    1.1282    1.0000   -1.0486    0.2962
+    1.0000    2.0313    1.0389    1.0000   -1.1034    0.3639
+    1.0000    1.9422    0.9492    1.0000   -1.1916    0.4730
+    1.0000    1.8788    0.8852    1.0000   -1.3209    0.6327
+    1.0000    1.8513    0.8571    1.0000   -1.5027    0.8575
+
+</pre><h2 id="19">2.9. Funci&oacute;n de transferencia de secciones de segundo orden cuantificadas</h2><pre class="codeinput">[BB1q,AA1q]=sos2tf(sos1q,g);
+disp(<span class="string">'BB1q ='</span>);disp(BB1q');
+disp(<span class="string">'AA1q ='</span>);disp(AA1q');
+</pre><pre class="codeoutput">BB1q =
+   1.0e-03 *
+
+    0.0001
+    0.0014
+    0.0078
+    0.0260
+    0.0585
+    0.0936
+    0.1092
+    0.0936
+    0.0585
+    0.0260
+    0.0078
+    0.0014
+    0.0001
+
+AA1q =
+    0.9998
+   -7.1884
+   24.3358
+  -51.0888
+   73.8563
+  -77.2840
+   59.9163
+  -34.6255
+   14.7853
+   -4.5447
+    0.9537
+   -0.1226
+    0.0073
+
+</pre><h2 id="20">2.10. Estabilidad de las secciones de segundo orden cuantificadas</h2><pre class="codeinput">figure;zplane(BB1q,AA1q);title(<span class="string">'H1 cuantificado'</span>);
+</pre><img vspace="5" hspace="5" src="p5_09.png" alt=""> <p>Al usar una estructura en cascada disminuimos el ruido de cuantificaci&oacute;n lo que supone implementar el filtro de forma estable.</p><h2 id="22">3. Efectos de precisi&oacute;n finita en los c&aacute;lculos</h2><p>Con ayuda del apartado <i>6.9.2. Scaling in Fixed-Point Implementations of IIR Systems</i></p><p><i>Oppenheim, Alan V., and Ronald W. Schafer. Discrete-Time Signal Processing. 3rd ed. Upper Saddle River [N.J: Pearson, 2010]</i></p><pre class="codeinput">load(<span class="string">'coefs.mat'</span>);
+</pre><h2 id="23">3.1. Estudio anal&iacute;tico</h2><p>Distinguimos dos casos:</p><div><ol><li>Se&ntilde;al de entrada arbitraria.</li><li>Tono de frecuencia arbitraria.</li></ol></div><h2 id="24">3.1.1 Determinar Amax</h2><h2 id="25">3.1.1.1. Se&ntilde;al de entrada arbitraria</h2><p>Existen dos nodos cr&iacute;ticos donde se producen sumas, estos se encuentran a la entrada y a la salida del sistema.</p><p>Para el nodo de entrada la respuesta en frecuencia es la del sistema formada unicamente por polos.</p><pre class="language-matlab">ha=impz(1,A);
+Amaxaa=1/sum(abs(ha))
+</pre><pre class="codeinput">ha=impz(1,A);
+Amaxaa=1/sum(abs(ha))
+</pre><pre class="codeoutput">
+Amaxaa =
+
+    0.1659
+
+</pre><p>Para el nodo de salida la respuesta en frecuencia es la del sistema completo(formada por polos y ceros).</p><pre class="language-matlab">hb=impz(B,A);
+Amaxba=1/sum(abs(hb))
+</pre><pre class="codeinput">hb=impz(B,A);
+Amaxba=1/sum(abs(hb))
+</pre><pre class="codeoutput">
+Amaxba =
+
+    0.4814
+
+</pre><h2 id="27">3.1.1.2. Tono de frecuencia arbitraria</h2><p>Existen dos nodos cr&iacute;ticos donde se producen sumas, estos se encuentran a la entrada y a la salida del sistema.</p><p>Para el nodo de entrada la respuesta en frecuencia es la del sistema formada unicamente por polos.</p><pre class="language-matlab">Ha=freqz(1,A);
+Amaxat=1/max(abs(Ha))
+</pre><pre class="codeinput">Ha=freqz(1,A);
+Amaxat=1/max(abs(Ha))
+</pre><pre class="codeoutput">
+Amaxat =
+
+    0.2027
+
+</pre><p>Para el nodo de salida la respuesta en frecuencia es la del sistema completo(formada por polos y ceros).</p><pre class="language-matlab">Hb=freqz(B,A);
+Amaxbt=1/max(abs(Hb))
+</pre><pre class="codeinput">Hb=freqz(B,A);
+Amaxbt=1/max(abs(Hb))
+</pre><pre class="codeoutput">
+Amaxbt =
+
+    0.9998
+
+</pre><pre class="codeinput">Amax=min(min(Amaxaa,Amaxba),min(Amaxat,Amaxbt))
+</pre><pre class="codeoutput">
+Amax =
+
+    0.1659
+
+</pre><h2 id="30">3.1.2. Determinar la potencia de ruido</h2><p>Para M ceros y N polos, la potencia de ruido es:</p><p><img src="p5_eq13041345152286899377.png" alt="$$\sigma^2 =(N+1)\frac{2^{-2B}}{12}\sum_{n=-\infty}^{\infty}|h[n]|^2+(M+1)\frac{2^{-2B}}{12}$$" style="width:296px;height:41px;"></p><pre class="codeinput">b=8;M=5;N=4;
+Pr = (N+1)*2^(-2*b)*sum(abs(hb).^2)/12+(M+1)*2^(-2*b)/12;
+disp([<span class="string">'La potencia de ruido es: '</span>,num2str(Pr)]);
+</pre><pre class="codeoutput">La potencia de ruido es: 1.0743e-05
+</pre><h2 id="31">3.2. Estudio por simulaci&oacute;n</h2><h2 id="32">3.2.1. Saturaci&oacute;n</h2><pre class="codeinput">x=randn(1,500);
+<span class="comment">% 3.2.1.1.</span>
+x1=0.95*Amax*x/max(x);
+y1=filter(B,A,x1);yc1=filtraq(B,A,x1,30);
+figure;plot(y1);hold <span class="string">on</span>;stem(yc1);
+title(<span class="string">'Se&ntilde;al aleatoria filtrada con valor m&aacute;ximo de 0.95 \times A_{max}'</span>);
+legend(<span class="string">'Sin cuantificar'</span>,<span class="string">'Cuantificada con 30 bits'</span>);
+<span class="comment">% 3.2.1.2.</span>
+x2=x/max(x);
+y2=filter(B,A,x2);yc2=filtraq(B,A,x2,30);
+figure;plot(y2);hold <span class="string">on</span>;stem(yc2);
+title(<span class="string">'Se&ntilde;al aleatoria filtrada con valor m&aacute;ximo de 1'</span>);
+legend(<span class="string">'Sin cuantificar'</span>,<span class="string">'Cuantificada con 30 bits'</span>);
+<span class="comment">% La se&ntilde;al en el nodo cr&iacute;tico es:</span>
+y3=filter(1,A,x2);yc3=filtraq(1,A,x2,30);
+figure;plot(y3);hold <span class="string">on</span>;stem(yc3);
+title(<span class="string">'Se&ntilde;al en el nodo cr&iacute;tico'</span>);
+legend(<span class="string">'Sin cuantificar'</span>,<span class="string">'Cuantificada con 30 bits'</span>);
+</pre><img vspace="5" hspace="5" src="p5_10.png" alt=""> <img vspace="5" hspace="5" src="p5_11.png" alt=""> <img vspace="5" hspace="5" src="p5_12.png" alt=""> <h2 id="33">3.2.2. Redondeos en las operaciones</h2><pre class="codeinput"><span class="comment">% 3.2.2.1.</span>
+x4=0.3*Amax*x/max(x);
+<span class="comment">% 3.2.2.2.</span>
+y4=filter(B,A,x4);yc4=filtraq(B,A,x4,8);
+<span class="comment">% 3.2.2.3.</span>
+figure;plot(y4);hold <span class="string">on</span>;plot(yc4);
+title(<span class="string">'Se&ntilde;al aleatoria filtrada con valor m&aacute;ximo de 0.3 \times A_{max}'</span>);
+legend(<span class="string">'Sin cuantificar'</span>,<span class="string">'Cuantificada con 8 bits'</span>);
+xlim([351,450]);
+</pre><img vspace="5" hspace="5" src="p5_13.png" alt=""> <p>Se puede observar ruido de cuantificaci&oacute;n.</p><pre class="codeinput"><span class="comment">% 3.2.2.4.</span>
+y4d=yc4'-y4;
+Prs=sum(abs(y4d).^2)^2;
+disp([<span class="string">'La potencia de ruido te&oacute;rica es: '</span>,num2str(Pr)]);
+disp([<span class="string">'Mientras que la potencia de ruido real es: '</span>,num2str(Prs)]);
+</pre><pre class="codeoutput">La potencia de ruido te&oacute;rica es: 1.0743e-05
+Mientras que la potencia de ruido real es: 1.4984e-05
+</pre><p>Los resultados son bastante similares. Adem&aacute;s, observamos que el ruido que introduce una cuantificaci&oacute;n de 8 bits parece peque&ntilde;o.</p><h2 id="37">4. Aplicaci&oacute;n a se&ntilde;ales de audio</h2><h2 id="38">4.1. Inestabilidad por cuantificaci&oacute;n de los coeficientes</h2><pre class="codeinput">[x,fs]=audioread(<span class="string">'audio.wav'</span>);
+Amax=1/sum(abs(impz(1,A1)));
+y=filtraqr(B1,A1q,x*Amax,28)/Amax;
+z=filtraqr(B1,A1,x*Amax,28)/Amax;
+audiowrite(<span class="string">'4.1_y.wav'</span>, y, fs);
+audiowrite(<span class="string">'4.1_z.wav'</span>, z, fs);
+</pre><pre class="codeoutput">Warning: Data clipped when writing file. 
+</pre><p>Podemos oir un pitido en la se&ntilde;al filtrada con el filtro inestable (cuantificado), mientras que la se&ntilde;al filtrada con el filtro implementado en cascada (sin cuantificar) se escucha perfectamente.</p><h2 id="40">4.2. Saturaci&oacute;n por escalado incorrecto</h2><pre class="codeinput">y=filtraqr(B1,A1,x*Amax*10,28)/Amax/10;
+audiowrite(<span class="string">'4.2_y.wav'</span>, y, fs);
+</pre><p>Se puede escuchar como al principio filtra perfectamente, pero llega un momento en el que satura y se escucha un pitido.</p><h2 id="42">4.3. Ruido de redondeo</h2><p>16 bits: Se escucha mucho ruido</p><pre class="codeinput">z=filtraqr(B1,A1,x*Amax,16)/Amax;
+audiowrite(<span class="string">'4.3_y_16_bits.wav'</span>, z, fs);
+delta = (2/2^16);
+Amax_16bits = Amax/delta;
+</pre><p>19 bits: Se escucha mejor que con 16 bits</p><pre class="codeinput">z=filtraqr(B1,A1,x*Amax,19)/Amax;
+audiowrite(<span class="string">'4.3_y_19_bits.wav'</span>, z, fs);
+delta = (2/2^19);
+Amax_19bits = Amax/delta;
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% PRÁCTICA 5 - EFECTOS DE PRECISIÓN FINITA EN FILTROS DIGITALES
+%%
+clc;clearvars;close all;
+%% 2. Efectos del redondeo en los coeficientes en la respuesta en frecuencia
+load('filtros.mat');
+%% 2.1. Respuesta en frecuencia
+figure;freqz(B1,A1);title('H1');
+figure;freqz(B2,A2);title('H2');
+%% 2.2. Determinación de polos y ceros
+figure;zplane(B1,A1);title('H1');
+%%
+disp('Ceros de H1:');disp(roots(B1));
+disp('Polos de H1:');disp(roots(A1));
+figure;zplane(B2,A2);title('H2');
+%%
+disp('Ceros de H2:');disp(roots(B2));
+disp('Polos de H2:');disp(roots(A2));
+%% 2.3. Cuantificación coeficientes del denominador
+% Las constantes K1 y K2 para que los coeficientes almacenados del
+% denominador sean menores que la unidad son:
+K1=ceil(max(abs(A1)));
+K2=ceil(max(abs(A2)));
+disp(['K1=',num2str(K1)]);
+disp(['K2=',num2str(K2)]);
+%%
+% Los coeficientes normalizados de ambos filtros son:
+ak1=A1/K1; ak2=A2/K2;
+disp('a1:');disp(ak1');
+disp('a2:');disp(ak2');
+%%
+% Cuantificamos
+B=16;
+ak1=cuantif(ak1,B);ak2=cuantif(ak2,B);
+%%
+% Obtenemos A1q y A2q:
+A1q=K1*ak1;
+A2q=K2*ak2;
+disp('A1q:');disp(A1q');
+disp('A2q:');disp(A2q');
+%% 2.4. Polos de filtros con coeficientes cuantificados
+figure;zplane(1,A1q);title('H1');
+%%
+disp('Polos de H1 cuantificados:');disp(roots(A1q));
+figure;zplane(1,A2q);title('H2');
+%%
+disp('Polos de H2 cuantificados:');disp(roots(A2q));
+%%
+% El filtro 1 es inestable, ya que varios polos se encuentran fuera del
+% círculo unidad (suponemos que es un filtro causal ya que, si no, no sería
+% implementable).
+%% 2.5. Cuantificación de los coeficientes del numerador
+Bq=cuantif(B2,B);
+disp('Bq:');disp(Bq');
+%% 2.6. Determinación de la respuesta en frecuencia del filtro con coeficientes cuantificados
+figure;freqz(Bq,A2q);title('H2 cuantificado');
+figure;freqz(B2,A2);title('H2 sin cuantificar');
+%% 2.7. Descomposición en secciones de segundo orden
+[sos1, g] = tf2sos(B1, A1);
+sos1
+%% 2.8. Cuantificación de las secciones de segundo orden
+K=ceil(max(max(abs(sos1))));
+sos1k=sos1/K;
+sos1q=cuantif(sos1k,B);
+sos1q=sos1q*K
+%% 2.9. Función de transferencia de secciones de segundo orden cuantificadas
+[BB1q,AA1q]=sos2tf(sos1q,g);
+disp('BB1q =');disp(BB1q');
+disp('AA1q =');disp(AA1q');
+%% 2.10. Estabilidad de las secciones de segundo orden cuantificadas
+figure;zplane(BB1q,AA1q);title('H1 cuantificado');
+%%
+% Al usar una estructura en cascada disminuimos el ruido de cuantificación
+% lo que supone implementar el filtro de forma estable.
+%% 3. Efectos de precisión finita en los cálculos
+% Con ayuda del apartado _6.9.2. Scaling in Fixed-Point Implementations of IIR Systems_
+%
+% _Oppenheim, Alan V., and Ronald W. Schafer. Discrete-Time Signal Processing. 3rd ed. Upper Saddle River [N.J: Pearson, 2010]_
+load('coefs.mat');
+%% 3.1. Estudio analítico 
+% Distinguimos dos casos:
+%
+% # Señal de entrada arbitraria.
+% # Tono de frecuencia arbitraria.
+%% 3.1.1 Determinar Amax
+%% 3.1.1.1. Señal de entrada arbitraria
+% Existen dos nodos críticos donde se producen sumas, estos se encuentran a
+% la entrada y a la salida del sistema.
+%
+% Para el nodo de entrada la respuesta en frecuencia es la del sistema
+% formada unicamente por polos.
+% 
+%   ha=impz(1,A);
+%   Amaxaa=1/sum(abs(ha))
+ha=impz(1,A);
+Amaxaa=1/sum(abs(ha))
+%%
+% Para el nodo de salida la respuesta en frecuencia es la del sistema
+% completo(formada por polos y ceros).
+%
+%   hb=impz(B,A);
+%   Amaxba=1/sum(abs(hb))
+hb=impz(B,A);
+Amaxba=1/sum(abs(hb))
+%% 3.1.1.2. Tono de frecuencia arbitraria
+% Existen dos nodos críticos donde se producen sumas, estos se encuentran a
+% la entrada y a la salida del sistema.
+%
+% Para el nodo de entrada la respuesta en frecuencia es la del sistema
+% formada unicamente por polos.
+%
+%   Ha=freqz(1,A);
+%   Amaxat=1/max(abs(Ha))
+Ha=freqz(1,A);
+Amaxat=1/max(abs(Ha))
+%%
+% Para el nodo de salida la respuesta en frecuencia es la del sistema
+% completo(formada por polos y ceros).
+% 
+%   Hb=freqz(B,A);
+%   Amaxbt=1/max(abs(Hb))
+Hb=freqz(B,A);
+Amaxbt=1/max(abs(Hb))
+%%
+Amax=min(min(Amaxaa,Amaxba),min(Amaxat,Amaxbt))
+%% 3.1.2. Determinar la potencia de ruido
+% Para M ceros y N polos, la potencia de ruido es:
+%
+% $$\sigma^2 =(N+1)\frac{2^{-2B}}{12}\sum_{n=-\infty}^{\infty}|h[n]|^2+(M+1)\frac{2^{-2B}}{12}$$
+% 
+b=8;M=5;N=4;
+Pr = (N+1)*2^(-2*b)*sum(abs(hb).^2)/12+(M+1)*2^(-2*b)/12;
+disp(['La potencia de ruido es: ',num2str(Pr)]);
+%% 3.2. Estudio por simulación
+%% 3.2.1. Saturación
+x=randn(1,500);
+% 3.2.1.1.
+x1=0.95*Amax*x/max(x);
+y1=filter(B,A,x1);yc1=filtraq(B,A,x1,30);
+figure;plot(y1);hold on;stem(yc1);
+title('Señal aleatoria filtrada con valor máximo de 0.95 \times A_{max}');
+legend('Sin cuantificar','Cuantificada con 30 bits');
+% 3.2.1.2.
+x2=x/max(x);
+y2=filter(B,A,x2);yc2=filtraq(B,A,x2,30);
+figure;plot(y2);hold on;stem(yc2);
+title('Señal aleatoria filtrada con valor máximo de 1');
+legend('Sin cuantificar','Cuantificada con 30 bits');
+% La señal en el nodo crítico es:
+y3=filter(1,A,x2);yc3=filtraq(1,A,x2,30);
+figure;plot(y3);hold on;stem(yc3);
+title('Señal en el nodo crítico');
+legend('Sin cuantificar','Cuantificada con 30 bits');
+%% 3.2.2. Redondeos en las operaciones
+%%
+
+% 3.2.2.1.
+x4=0.3*Amax*x/max(x);
+% 3.2.2.2.
+y4=filter(B,A,x4);yc4=filtraq(B,A,x4,8);
+% 3.2.2.3.
+figure;plot(y4);hold on;plot(yc4);
+title('Señal aleatoria filtrada con valor máximo de 0.3 \times A_{max}');
+legend('Sin cuantificar','Cuantificada con 8 bits');
+xlim([351,450]);
+%%
+% Se puede observar ruido de cuantificación.
+
+% 3.2.2.4.
+y4d=yc4'-y4;
+Prs=sum(abs(y4d).^2)^2;
+disp(['La potencia de ruido teórica es: ',num2str(Pr)]);
+disp(['Mientras que la potencia de ruido real es: ',num2str(Prs)]);
+%%
+% Los resultados son bastante similares. Además, observamos que el ruido que
+% introduce una cuantificación de 8 bits parece pequeño.
+%% 4. Aplicación a señales de audio
+%% 4.1. Inestabilidad por cuantificación de los coeficientes
+[x,fs]=audioread('audio.wav');
+Amax=1/sum(abs(impz(1,A1)));
+y=filtraqr(B1,A1q,x*Amax,28)/Amax;
+z=filtraqr(B1,A1,x*Amax,28)/Amax;
+audiowrite('4.1_y.wav', y, fs);
+audiowrite('4.1_z.wav', z, fs);
+%%
+% Podemos oir un pitido en la señal filtrada con el filtro inestable
+% (cuantificado), mientras que la señal filtrada con el filtro implementado
+% en cascada (sin cuantificar) se escucha perfectamente.
+%% 4.2. Saturación por escalado incorrecto
+y=filtraqr(B1,A1,x*Amax*10,28)/Amax/10;
+audiowrite('4.2_y.wav', y, fs);
+%%
+% Se puede escuchar como al principio filtra perfectamente, pero llega un
+% momento en el que satura y se escucha un pitido.
+%% 4.3. Ruido de redondeo
+% 16 bits: Se escucha mucho ruido
+z=filtraqr(B1,A1,x*Amax,16)/Amax;
+audiowrite('4.3_y_16_bits.wav', z, fs);
+delta = (2/2^16);
+Amax_16bits = Amax/delta;
+%%
+% 19 bits: Se escucha mejor que con 16 bits
+z=filtraqr(B1,A1,x*Amax,19)/Amax;
+audiowrite('4.3_y_19_bits.wav', z, fs);
+delta = (2/2^19);
+Amax_19bits = Amax/delta;
+##### SOURCE END #####
+--></body></html>
